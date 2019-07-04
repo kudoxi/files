@@ -1,0 +1,1422 @@
+if (new_list[j].download_script) {
+                this.equipmentList[i] = Object.assign(this.equipmentList[i], { download_script: new_list[j].download_script })
+                if (new_list[j].download_script === -1 || new_list[j].download_script === 1) {
+                  this.equipmentList[i] = Object.assign(this.equipmentList[i], { new_script: new_list[j].new_script })
+                } else {
+                  this.equipmentList[i] = Object.assign(this.equipmentList[i], { script: new_list[j].script })
+                }
+              } else if (new_list[j].download_sync) {
+                this.equipmentList[i] = Object.assign(this.equipmentList[i], { download_sync: new_list[j].download_sync })
+                if (new_list[j].download_sync === -1 || new_list[j].download_sync === 1) {
+                  this.equipmentList[i] = Object.assign(this.equipmentList[i], { new_sync: new_list[j].new_sync })
+                } else {
+                  this.equipmentList[i] = Object.assign(this.equipmentList[i], { sync_version: new_list[j].sync_version })
+                }
+              } else if (new_list[j].download_ident) {
+                this.equipmentList[i] = Object.assign(this.equipmentList[i], { download_ident: new_list[j].download_ident })
+                if (new_list[j].download_ident === -1 || new_list[j].download_ident === 1) {
+                  this.equipmentList[i] = Object.assign(this.equipmentList[i], { new_ident: new_list[j].new_ident })
+                } else {
+                  this.equipmentList[i] = Object.assign(this.equipmentList[i], { ident_version: new_list[j].ident_version })
+                }
+              } else if (new_list[j].download_ident_file) {
+                this.equipmentList[i] = Object.assign(this.equipmentList[i], { download_ident_file: new_list[j].download_ident_file })
+                if (new_list[j].download_ident_file === -1 || new_list[j].download_ident_file === 1) {
+                  this.equipmentList[i] = Object.assign(this.equipmentList[i], { new_ident_file: new_list[j].new_ident_file })
+                } else {
+                  this.equipmentList[i] = Object.assign(this.equipmentList[i], { ident_file_version: new_list[j].ident_file_version })
+                }
+              }
+const scriptList = []
+          const service = axios.create({
+            baseURL: 'http://api.oa.damosphere.com',
+            timeout: 10000
+          })
+          service.get('/app/v1/schedule', { params: { name: equipment.schedule_name }})
+            .then(response => {
+              response.data.data.forEach(item => {
+                scriptList.push({
+                  id: item.id,
+                  name: item.scheduleName,
+                  MD5: item.MD5,
+                  md5_version: item.md5_version
+                })
+              })
+              this.optionsScript = scriptList
+              this.fullscreenLoading = false
+            })
+            .catch(() => {
+              this.fullscreenLoading = false
+            })
+
+initWebSocket() {
+      this.websocket = new WebSocket(process.env.WS_API)
+      this.websocket.onopen = this.websocketOnOpen
+      this.websocket.onerror = this.websocketOnError
+      this.websocket.onmessage = this.websocketOnMessage
+      this.websocket.onclose = this.websocketClose
+    },
+    websocketOnOpen() {
+      console.log('WebSocket连接成功')
+    },
+    websocketOnError(e) {
+      console.log('WebSocket连接发生错误')
+    },
+    websocketOnMessage(e) {
+      console.log('收到消息：' + e.data)
+    },
+    websocketSend(data) {
+      if (this.websocket !== null) {
+        this.websocket.send(data)
+      }
+    },
+    websocketClose(e) {
+      console.log('connection closed (' + e.code + ')')
+    },
+
+测试：https://xscenic.qiweiwangguo.com/3dworld/index.html#/player/index?no=10028
+
+showFirmware(equipments) {
+      this.firmwareTemp = equipments
+      this.firmwareList = []
+      this.firmwareDialogVisible = true
+      const firmware_info = equipments[0].firmware_info
+      this.firmwareHeader = firmware_info.map((item) => { return item.name })
+      // const file_name = firmware_info.map((item) => { return item.file_name })
+      // const version = firmware_info.map((item) => { return item.version })
+      // const obj_file_name = {}
+      // const obj_version = {}
+      const obj_button = {}
+      for (let i = 0; i < this.firmwareHeader.length; i++) {
+        // obj_file_name['c' + (i + 1)] = file_name[i]
+        // obj_version['c' + (i + 1)] = version[i]
+        obj_button['c' + (i + 1)] = { text: '升级', disabled: false, name: this.firmwareHeader[i], loading: false }
+      }
+      // this.firmwareList.push(obj_file_name)
+      // this.firmwareList.push(obj_version)
+      this.firmwareList.push(obj_button)
+    },
+
+sessionCountForm: {
+        sessionCountHeader: [],
+        sessionCountList: [{}]
+      },
+
+this.sessionCountForm.sessionCountHeader = [
+        { label: '活动时间', count: '场次数' },
+        { label: '2019.3.1', count: '20' },
+        { label: '2019.3.2', count: '30' }
+      ]
+
+<el-table
+          :data="sessionCountForm.sessionCountList"
+          :header-cell-style="{background: '#717EA1', color: '#FFFFFF'}"
+          style="margin-top:10px;"
+          element-loading-text="Loading"
+          border
+          fit
+          highlight-current-row>
+          <el-table-column
+            v-for="(header, index) in sessionCountForm.sessionCountHeader"
+            :key="index"
+            :label="header.label"
+            :width="index === 0 ? '150' : '110'"
+            align="center">
+            <template slot-scope="scope">
+              <span v-if="index === 0">{{ header.count }}</span>
+              <el-form-item v-else :rules="sessionCountRules.count" :prop="'sessionCountHeader.' + index + '.count'">
+                <el-input
+                  v-model="header.count"
+                  :min="1"
+                  type="number"
+                  @keyup.native="num"/>
+              </el-form-item>
+            </template>
+          </el-table-column>
+        </el-table>
+
+filename*=UTF-8''%E6%A8%A1%E6%9D%BF_%E6%88%90%E6%9C%AC%E7%AE%A1%E7%90%86.xlsx
+
+() => import('@/views/cinema/form')
+
+<el-form-item v-else :prop="type!=='detail'?'hall_list':''" label="活动厅名称">
+        <el-tag
+          v-for="(hall, index) in cinemaForm.hall_list"
+          :key="index"
+          :disable-transitions="false"
+          closable
+          @close="handleClose(index)">
+          {{ hall.name }}
+        </el-tag>
+        <el-input
+          v-if="inputVisible"
+          ref="saveTagInput"
+          v-model="inputValue"
+          class="input-new-tag"
+          style="width:300px;margin-left:0;"
+          @keyup.enter.native="handleInputConfirm"
+          @blur="handleInputConfirm"
+        />
+        <el-button v-else class="button-new-tag" type="primary" size="small" @click="showInput">+新增厅</el-button>
+      </el-form-item>
+
+<el-dialog
+      :visible.sync="settingDialogVisible"
+      title="设置"
+      width="30%"
+      center
+      @close="settingDialogClose">
+      <el-form ref="settingForm" :model="settingForm" :rules="settingRules" label-width="110px">
+        <el-form-item label="主/从间隔时间" prop="interval">
+          <el-input
+            v-model="settingForm.interval"
+            :min="1"
+            type="number"
+            @keyup.native="num">
+            <template slot="append">min</template>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="settingDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleSettingConfirm">保存</el-button>
+      </span>
+    </el-dialog>
+
+settingForm: {
+        interval: 15
+      },
+      settingRules: {
+        interval: [
+          { required: true, message: '请输入主/从间隔时间', trigger: 'blur' }
+        ]
+      },
+
+
+<style rel="stylesheet/scss" lang="scss">
+.el-select__tags {
+  white-space: nowrap;
+  overflow: hidden;
+}
+</style>
+
+const start = moment().day(0).add(1, 'day').format('YYYY-MM-DD')
+    const end = moment().day(0).add(7, 'day').format('YYYY-MM-DD')
+    this.queryList.time = [new Date(start), new Date(end)]
+    this.queryList.cinema = [{ value: 1, label: '影院1' }]
+    const xData = []
+    for (let i = 1; i <= 7; i++) {
+      xData.push(moment().day(0).add(i, 'day').format('YYYY-MM-DD'))
+    }
+
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel
+
+
+ {
+          name: 'actual',
+          smooth: true,
+          type: 'line',
+          itemStyle: {
+            normal: {
+              color: '#3888fa',
+              lineStyle: {
+                color: '#3888fa',
+                width: 2
+              },
+              areaStyle: {
+                color: '#f3f8ff'
+              }
+            }
+          },
+          data: actualData,
+          animationDuration: 2800,
+          animationEasing: 'quadraticOut'
+        }
+
+<div style="height:220px;background:#F5F5F5;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+                <div style="width:100%;margin-left:50px;font-size:20px;font-weight:bold;">
+                  总盈利数
+                </div>
+                <div style="margin-top:50px;font-size:20px;font-weight:bold;">
+                  549
+                </div>
+              </div>
+              <div style="height:220px;background:#F5F5F5;margin-top:10px;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+                <div style="width:100%;margin-left:50px;font-size:20px;font-weight:bold;">
+                  总观影数
+                </div>
+                <div style="margin-top:50px;font-size:20px;font-weight:bold;">
+                  1256
+                </div>
+              </div>
+
+toolbox: {
+        show: true,
+        feature: {
+          dataView: { show: true, readOnly: false },
+          magicType: { show: true, type: ['line', 'bar'] },
+          restore: { show: true },
+          myTool: {
+            show: true,
+            title: '观影数',
+            icon: 'image://http://echarts.baidu.com/images/favicon.png',
+            onclick: function() {
+              alert(1)
+            }
+          },
+          saveAsImage: { show: true }
+        }
+      }
+
+formatDate(numb, format) {
+      const time = new Date((numb - 1) * 24 * 3600000 + 1)
+      time.setYear(time.getFullYear() - 70)
+      const year = time.getFullYear() + ''
+      const month = time.getMonth() + 1 + ''
+      const date = time.getDate() + ''
+      if (format && format.length === 1) {
+        return year + format + month + format + date
+      }
+      return year + (month < 10 ? '0' + month : month) + (date < 10 ? '0' + date : date)
+    },
+
+import2Excel(file) {
+      const fileReader = new FileReader()
+      fileReader.onload = (ev) => {
+        try {
+          const data = ev.target.result
+          const workbook = XLSX.read(data, {
+            type: 'binary'
+          })
+          for (const sheet in workbook.Sheets) {
+            const sheetArray = XLSX.utils.sheet_to_json(workbook.Sheets[sheet])
+            console.log(sheetArray)
+            this.cinemaList = this.dateTransition(sheetArray)
+          }
+        } catch (e) {
+          this.$message.warning('文件类型不正确！')
+          return false
+        }
+      }
+      fileReader.readAsBinaryString(file.raw)
+    },
+
+const demoEvents = [
+  {
+    title: '流浪地球',
+    start: '2019-02-28',
+    end: '2019-02-28',
+    person: null,
+    editPerson: null,
+    editFlag: true,
+    cssClass: 'family',
+    day_diff: 4
+  },
+  {
+    title: '流浪地球',
+    start: '2019-03-01',
+    end: '2019-03-01',
+    person: 50,
+    editPerson: 50,
+    editFlag: false,
+    cssClass: 'family',
+    day_diff: 3
+  },
+  {
+    title: '流浪地球',
+    start: '2019-03-02',
+    end: '2019-03-02',
+    person: null,
+    editPerson: null,
+    editFlag: true,
+    cssClass: 'family',
+    day_diff: 2
+  },
+  {
+    title: '流浪地球',
+    start: '2019-03-03',
+    end: '2019-03-03',
+    person: null,
+    editPerson: null,
+    editFlag: true,
+    cssClass: 'family',
+    enableEdit: false,
+    day_diff: 1
+  },
+  {
+    title: '流浪地球',
+    start: '2019-03-04',
+    end: '2019-03-04',
+    person: 30,
+    editPerson: 30,
+    editFlag: false,
+    cssClass: 'family',
+    day_diff: 0
+  },
+  {
+    title: '飞驰人生',
+    start: '2019-03-04',
+    end: '2019-03-04',
+    editFlag: false,
+    person: 20,
+    editPerson: 20,
+    cssClass: 'family',
+    day_diff: 0
+  },
+  {
+    title: '飞驰人生',
+    start: '2019-03-04',
+    end: '2019-03-04',
+    editFlag: false,
+    person: 20,
+    editPerson: 20,
+    cssClass: 'family',
+    day_diff: 0
+  },
+  {
+    title: '飞驰人生',
+    start: '2019-03-05',
+    end: '2019-03-05',
+    editFlag: true,
+    person: null,
+    editPerson: null,
+    cssClass: 'family',
+    day_diff: -1
+  },
+  {
+    title: '飞驰人生',
+    start: '2019-03-06',
+    end: '2019-03-06',
+    editFlag: true,
+    person: null,
+    editPerson: null,
+    cssClass: 'family',
+    day_diff: -2
+  }
+]
+
+"linebreak-style": [0,"error", "windows"],
+${location.origin}/mobile/index.html?#/wechat/share/${id}
+`我今天在${scenicInfo.scenicName}的龙舟比赛游戏中获得了大奖，快来仰慕我吧！`
+ const shareWxLink = `${window.location.href.split('#')[0]}static/html/redirect.html?app3Redirect=${
+         encodeURIComponent(`${location.origin}/mobile/index.html?#/wechat/share/${id}`)}`;
+
+
+mLeScanCallback
+InitBle
+
+if (mScanning) {
+                            Log.d(TAG, "停止扫描2....");
+                            scanLeDevice(false); // 停止蓝牙扫描
+                        }
+                        Log.d(TAG, "******连接蓝牙设备*****");
+                        // 连接蓝牙设备
+                        new MyConnectAsyncTask(VideoPlayerActivity.this, device).execute();
+
+
+
+// 开启柜门返回的消息
+      if (msg.op == 'open') {
+        console.log("打开柜门：" + msg + ", 时间：" + Date.now());
+        if (msg.error == 0) {
+          app.globalData.unPaid = true;
+          let door_num = msg.message.cabinet.split(":");
+          let duid = msg.message.duid.split(":");
+          let device = '';
+          for (let i = 0; i < door_num.length; i++) {
+            device = device + duid[i] + "#" + door_num[i] + ":"
+          }
+          console.log("设备号：" + device);
+          console.log("柜门号：" + door_num);
+          console.log("duid：" + duid);
+          // 存储柜门号
+          wx.setStorageSync('door_num', door_num);
+          // 储存duid
+          wx.setStorageSync('duid', msg.message.duid);
+          wx.hideLoading();
+          let cinemaCode = app.globalData.cinemaCode;
+          // 发送租设备id给服务器
+          this.sendDeviceOrder(device, cinemaCode, session);
+          // 跳转到租用成功页面
+          wx.redirectTo({
+            url: '/pages/rent-success/rent-success'
+          })
+        } else {
+          wx.hideLoading()
+          if (msg.error == 2) {
+            wx.showLoading({
+              title: '排队中, 请等待',
+              mask: true
+            })
+          } else if (msg.error == 4 || msg.error == 6) {
+            wx.showLoading({
+              title: '操作中，请等待',
+              mask: true
+            })
+          }
+        }
+      } 
+// 打开柜门的消息
+              let message_open = `{"op":"open","uid":"${mobile}","movie_id":${movieId},"movie":"${movie}","hall":"${hall}","channel": ${channel},"num": ${num}}`
+              console.log('发送打开柜门消息：' + JSON.stringify(message_open));
+              let message = new Paho.Message(JSON.stringify(message_open));
+              message.destinationName = app.globalData.topic + app.globalData.machineCode + '/';
+              app.globalData.client.send(message);
+let mobile1 = app.globalData.mobile;
+      let movieId1 = this.data.movieId;
+      let movie1 = this.data.movie;
+      let hall1 = this.data.hall;
+      let channel1 = this.data.channel;
+      let num1 = this.data.amount;
+      let fee1 = this.data.fee;
+      let message1 = `{"op":"open","uid":"${mobile1}","movie_id":${movieId1},"movie":"${movie1}","hall":"${hall1}","channel": ${channel1},"num": ${num1}}`
+// AES js
+var AES = require('../../utils/public.js');//引用封装好的加密解密js
+
+let cabinet = options.cabinet
+    let number = [34506, 34507, 34508, 34509]
+    if (number.length >= 1 && number.length <= 4) {
+      this.setData({
+        position: 'justify-content: center'
+      })
+    } else {
+      this.setData({
+        position: ''
+      })
+    }
+    this.setData({
+      number: number
+    });
+    let encrypt = AES.Encrypt(message)
+    console.log(AES.Decrypt(encrypt));
+.el-button.is-disabled,.el-button.is-disabled:focus,.el-button.is-disabled:hover{
+  color:#bfcbd9;
+  cursor:not-allowed;
+  background-image:none;
+  background-color:#eef1f6;
+  border-color:#d1dbe5
+}
+        <div>1、影厅名称只支持数字与字母输入，限制 20 字以内。（若涉及中文名称影厅，建议转化成首字母录入）</div>
+
+hallChange(value) {
+      // /[^\u4E00-\u9FA5]/g
+      const reg = /[\u4E00-\u9FA5]/g
+      if (new RegExp(reg).test(value)) {
+        setTimeout(() => {
+          this.cinemaForm.domains[this.index].movieHall = ''
+        }, 200)
+      }
+      // this.cinemaForm.domains[this.index].movieHall = value.replace(reg, '')
+    },
+getInfo(state.token).then(response => {
+          const data = response.data.admin
+          commit('SET_ROLES', data.role)
+          commit('SET_NAME', data.admin)
+          commit('SET_AVATAR', data.avatar || 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
+          resolve(response)
+        }).catch(error => {
+          reject(error)
+        })
+<!-- <div style="display: -webkit-flex;display: flex;">
+          <el-input style="width:50px" v-model="imageUrl"></el-input>
+          <span style="margin-left:10px;margin-right:10px;">.</span>
+          <el-input style="width:50px" v-model="imageUrl"></el-input>
+          <span style="margin-left:10px;margin-right:10px;">.</span>
+          <el-input style="width:50px" v-model="imageUrl"></el-input>
+          <span style="margin-left:10px;margin-right:10px;">.</span>
+          <el-input style="width:50px" v-model="imageUrl"></el-input>
+
+        </div> -->
+    <el-form-item v-if="type === 'add'" label="从柜数量" prop="subAmount">
+         <el-input  style="width: 200px;" v-model="cabinetForm.cinema"></el-input>   
+      </el-form-item>
+
+<view class="side" style="animation: {{animation}} 1s;  animation-fill-mode: forwards;">
+    <view style="top: 0;font-size: 20rpx;color: #1caab5;">{{sign}}</view>
+    <view class="content">
+      <view style="width: 30rpx;font-size: 30rpx;margin-left:10rpx;" a:for="{{part}}" a:for-index="index" a:key="unique">              {{item.movie}}              
+        <view style="width: 0.1em;height: 1em;background: orange;margin-left:15rpx;"></view>         {{item.scent}}          
+      </view>
+    </view>
+    <view style="top: 0;font-size:20rpx;color: #1caab5;">{{sign}}</view>
+  </view>
+信道区间：
+ const number = parseInt(value)
+      if (value.length === 3) {
+        if (number < 112 || number > 175) {
+          this.$message({
+            message: '影厅' + (this.index + 1) + '信道填写错误（信道区间 112 ~ 175）',
+            type: 'error'
+          })
+        } else {
+          if (this.index > 0) {
+            if (number - this.cinemaForm.domains[this.index - 1].channel < 5) {
+              this.$message({
+                message: '影厅' + (this.index + 1) + '信道必须比影厅' + this.index + '信道大5或以上',
+                type: 'error'
+              })
+            }
+          }
+        }
+      } else {
+        if (value.length > 3) {
+          this.$message({
+            message: '影厅' + (this.index + 1) + '信道填写错误（信道区间 112 ~ 175）',
+            type: 'error'
+          })
+        }
+      }
+2017122501177496
+为避免影厅间相互干扰，信道请设置从小到大排列且间隔大于等于5；信道区间 112 ~ 175。（正确示例：112、117、122.... 错误示例：112、113、114、115...）
+禅道
+用户名：gulihang	
+密码：glh123456
+540 936 270 468 135 234
+本周任务                                        进度
+智能柜后台管理系统优惠券页面ui                  100%       
+智能柜后台管理系统图片上传bug                   100%
+智能柜后台管理系统网络请求优化                  100%
+智能柜后台管理系统权限优化（按钮）              80%
+智能柜后台管理系统添加影院控件优化(将选择框整合）100%
+智能柜微信小程序测试和正式链接整合              100%
+智能柜支付宝小程序测试和正式链接整合            100%
+
+下周任务                                        预计进度
+智能柜后台管理系统优惠券页面与后台连接          100%
+微信和支付宝柜子2.0小程序                       根据设计变化和后台服务的情况 
+智能柜后台管理系统bug解决                       根据设计变化和后台服务的情况 
+
+ <waterfall
+        :line="line"
+        :line-gap="292"
+        :min-line-gap="220"
+        :max-line-gap="300"
+        :single-max-width="300"
+        :watch="items"
+        @reflowed="reflowed"
+        ref="waterfall"
+      >
+        <!-- each component is wrapped by a waterfall slot -->
+        <waterfall-slot
+          v-for="(item, index) in items" 
+          :width="item.width"
+          :height="item.height"
+          :order="index"
+          :key="item.index"
+        >
+          <!-- <el-card :body-style="{ padding: '0px' }" :style="item.style">
+            <img src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif" class="image">
+            <div>
+              <span>好吃的汉堡</span>
+              <div class="bottom clearfix">
+                <time class="time">content</time>
+                <el-button type="text" class="button">操作按钮</el-button>
+              </div>
+            </div>  
+          </el-card> -->
+
+          <img src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif" :style="item.style">
+
+        </waterfall-slot>
+      </waterfall> 
+
+
+
+
+vue2-waterfall
+import pg0 from './images/pg0.jpg'
+import pg1 from './images/pg1.jpg'
+import pg2 from './images/pg2.jpg'
+import pg3 from './images/pg3.jpg'
+import pg4 from './images/pg4.jpg'
+import pg5 from './images/pg5.jpg'
+<Waterfall @rendered="rendered" :gutterWidth="10" :gutterHeight="10">
+       <WaterfallItem v-for="(src, index) in dataArr" :key="index" :width="200" :order="index" class="item item-move">
+         <el-card :body-style="{ padding: '0px' }">
+           <img :src="src">
+           <div style="padding: 14px;">
+             <span>描述</span>
+             <div class="bottom clearfix">
+               <el-button type="text" class="button" @click="edit(index)">编辑</el-button>
+             </div>
+           </div>
+         </el-card>
+       </WaterfallItem>
+    </Waterfall>
+      dataArr: [],
+ fetchData() {
+      const imgArr = [pg0, pg1, pg2, pg3, pg4, pg5]
+      var data = []
+      for (let i = 0; i < 20; i++) {
+        const num = Math.floor(Math.random() * 6)
+        data.push(imgArr[num])
+      }
+      this.dataArr = this.dataArr.concat(data)
+    },
+
+ mounted() {
+    const that = this
+    window.addEventListener('scroll', function() {
+      var scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+      if (scrollTop + window.innerHeight >= document.body.clientHeight) {
+        console.log('load more')
+        that.fetchData()
+      }
+    })
+    const imgArr = [pg0, pg1, pg2, pg3, pg4, pg5]
+    for (let i = 0; i < 20; i++) {
+      const num = Math.floor(Math.random() * 6)
+      that.dataArr.push(imgArr[num])
+    }
+  },
+
+watch: {
+    category() {
+      console.log('change category')
+      this.dataArr = []
+      this.fetchData()
+      this.imgsArr = []
+    }
+  },
+
+
+vue-waterfall-easy
+<vue-waterfall-easy :imgsArr="imgsArr" @scrollLoadImg="fetchImgsData">
+    </vue-waterfall-easy>
+initImgsArr() {   // 初始化图片数组的方法，把要加载的图片装入
+      var arr = []
+      const imgArr = [pg0, pg1, pg2, pg3, pg4, pg5]
+      for (let i = 0; i < 20; i++) {
+        const num = Math.floor(Math.random() * 6)
+        arr.push({ src: imgArr[num], link: 'https://www.baidu.com', info: '一些图片描述文字' })
+      }
+      return arr
+    },
+    fetchImgsData() {    // 获取新的图片数据的方法，用于页面滚动满足条件时调用
+      this.imgsArr = this.imgsArr.concat(this.fetchImgsArr)   // 数组拼接，把下一批要加载的图片放入所有图片的数组中
+    },
+imgsArr: [],         // 存放所有已加载图片的数组（即当前页面会加载的所有图片）
+      fetchImgsArr: [],    // 存放每次滚动时下一批要加载的图片的数组
+created() {
+    this.imgsArr = this.initImgsArr()       // 初始化第一次（即页面加载完毕时）要加载的图片数据
+    this.fetchImgsArr = this.initImgsArr() // 模拟每次请求的下一批新的图片的数据数据
+  },
+
+
+
+
+
+// 影院选择控件的列
+<el-table-column align="center">
+              <template scope="scope">
+                <el-popover v-if="(scope.row)[0].exist" trigger="hover" placement="top" v-model="(scope.row)[0].visible">
+                  <p>{{ (scope.row)[0].name }}</p>
+                  <div slot="reference" >
+                    <el-button class="button" :disabled="(scope.row)[0].disabled" @click="handleClick((scope.row)[0].cinemaId, scope.$index, 0, (scope.row)[0].name)">{{(scope.row)[0].name}}</el-button>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column align="center">
+              <template scope="scope">
+                <el-popover v-if="(scope.row)[1].exist" trigger="hover" placement="top" v-model="(scope.row)[1].visible">
+                  <p>{{ (scope.row)[1].name }}</p>
+                  <div slot="reference" >
+                    <el-button class="button" :disabled="(scope.row)[1].disabled" @click="handleClick((scope.row)[1].cinemaId, scope.$index, 1, (scope.row)[1].name)">{{(scope.row)[1].name}}</el-button>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column align="center">
+              <template scope="scope">
+                <el-popover v-if="(scope.row)[2].exist" trigger="hover" placement="top" v-model="(scope.row)[2].visible">
+                  <p>{{ (scope.row)[2].name }}</p>
+                  <div slot="reference" >
+                    <el-button class="button" :disabled="(scope.row)[2].disabled" @click="handleClick((scope.row)[2].cinemaId, scope.$index, 2, (scope.row)[2].name)">{{(scope.row)[2].name}}</el-button>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column align="center">
+              <template scope="scope">
+                <el-popover v-if="(scope.row)[3].exist" trigger="hover" placement="top" v-model="(scope.row)[3].visible">
+                  <p>{{ (scope.row)[3].name }}</p>
+                  <div slot="reference" >
+                    <el-button class="button" :disabled="(scope.row)[3].disabled" @click="handleClick((scope.row)[3].cinemaId, scope.$index, 3, (scope.row)[3].name)">{{(scope.row)[3].name}}</el-button>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column align="center">
+              <template scope="scope">
+                <el-popover v-if="(scope.row)[4].exist" trigger="hover" placement="top" v-model="(scope.row)[4].visible">
+                  <p>{{ (scope.row)[4].name }}</p>
+                  <div slot="reference" >
+                    <el-button class="button" :disabled="(scope.row)[4].disabled" @click="handleClick((scope.row)[4].cinemaId, scope.$index, 4, (scope.row)[4].name)">{{(scope.row)[4].name}}</el-button>
+                  </div>
+                </el-popover>  
+              </template>
+            </el-table-column>
+
+getImg(scope.item.index)
+
+
+<el-form-item label-width="80px" prop="withdraw">
+        <div style="display: -webkit-flex;display: flex;">
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <div style="display: -webkit-flex;display: flex;justify-content: space-between;">
+                <div style="">支付宝</div>
+                <div style="font-size: 20px;margin-left: 20px;line-height: 20px;">可提现</div>
+                <div style="float: right;font-size: 30px;" type="primary"><sub style="font-size: 15px;">￥</sub>{{alipay}}</div>
+              </div>
+            </div> 
+            <div class="bottom">
+              <el-input v-model="withdrawForm.withdraw_alipay" placeholder="输入需要提现的金额" autofocus="true"></el-input>
+            </div>
+          </el-card>
+          <el-card class="box-card space">
+            <div slot="header" class="clearfix">
+              <div style="display: -webkit-flex;display: flex;justify-content: space-between;">
+                <div style="">微信</div>
+                <div style="font-size: 20px;margin-left: 20px;line-height: 20px;">可提现</div>
+                <div style="float: right;font-size: 30px;" type="primary"><sub style="font-size: 15px;">￥</sub>{{wechat}}</div>
+              </div>
+            </div>
+            <div class="bottom">
+              <el-input v-model="withdrawForm.withdraw_wechat" placeholder="输入需要提现的金额"></el-input>
+            </div>
+          </el-card>
+        </div>
+      </el-form-item>
+
+.navbar {
+        height: 50px;
+        line-height: 50px;
+        border-radius: 0px !important;
+        .hamburger-container {
+            line-height: 58px;
+            height: 50px;
+            float: left;
+            padding: 0 10px;
+        }
+        .errLog-container {
+            display: inline-block;
+            position: absolute;
+            right: 150px;
+        }
+        .screenfull {
+            position: absolute;
+            right: 90px;
+            top: 16px;
+            color: red;
+        }
+        .avatar-container {
+            height: 50px;
+            display: inline-block;
+            position: absolute;
+            right: 35px;
+            .avatar-wrapper {
+                cursor: pointer;
+                margin-top: 5px;
+                position: relative;
+                .user-avatar {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 10px;
+                }
+                .el-icon-caret-bottom {
+                    position: absolute;
+                    right: -20px;
+                    top: 25px;
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+
+
+var i
+      var j
+      for (i = 0; i < this.cinemaList.length; i++) {
+        if (this.cinema === this.cinemaList[i].value) {
+          this.filter.cinema = this.cinemaList[i].cinemaCode
+          break
+        }
+      }
+      for (j = 0; j < this.movieList.length; j++) {
+        if (this.movie === this.movieList[j].value) {
+          this.filter.movie = this.movieList[j].movieId
+        }
+        break
+      }
+      if (this.cinema === '') {
+        i = -1
+      }
+      if (this.movie === '') {
+        j = -1
+      }
+      if ((i === this.cinemaList.length || j === this.movieList.length) && (this.cinema !== '' || this.movie !== '')) {
+        this.transactionList = []
+        this.pagination.hasPreviousPage = null
+        this.pagination.hasNextPage = null
+        this.pagination.before = ''
+        this.pagination.cursor = ''
+        this.pagination.totalCount = 0
+        this.pagination.page = 0
+        this.pagination.limit = 10
+        return
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+dialog = new Dialog(IndexActivity.this, R.style.Theme_WG_Player_CustomDialog_DeviceList);
+			dialog.setCanceledOnTouchOutside(true);// 设置点击Dialog外部任意区域关闭Dialog
+			if (null == inflater) {
+				inflater = LayoutInflater.from(this);
+			}
+			// 监听销毁重新播放
+			dialog.setOnDismissListener(new OnDismissListener() {
+
+				@Override
+				public void onDismiss(DialogInterface dialog) {
+					LogUtil.d(TAG, "******");
+				}
+			});
+			viewDialog = inflater.inflate(R.layout.dialog_tab, null);
+			dialog.setContentView(viewDialog);
+
+			WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+			lp.alpha = 0.98f; // 0.0-1.0
+			dialog.getWindow().setAttributes(lp);
+
+
+
+slvFoundBleDevices = (ListView) dialog.findViewById(R.id.model_list);
+			mRefreshtScan = (Button) dialog.findViewById(R.id.btn_refresht_scan);
+			// 选择标题
+			mTvSelectTitle = (TextView) dialog.findViewById(R.id.tv_select_title);
+			mTvSelectTitle.setText("");
+			// 信号标题
+			mRssiTitle = (TextView) dialog.findViewById(R.id.tv_rssi_title);
+			mRssiTitle.setText("");
+			setDeviceListtitle();
+			// 蓝牙新设备列表
+			slvFoundBleDevices.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+					LogUtil.d(TAG, "******************" + position);
+					/**************************************/
+					BluetoothDevice device = (BluetoothDevice) mLeDeviceListAdapter.getItem(position);
+					if (device == null)
+						return;
+					Log.d(TAG, "******yyyyy*****");
+					// 判断本地蓝牙是否已打开
+					if (!mble.isOpened()) {
+						Toast.makeText(IndexActivity.this, getString(R.string.ble_close), toastTime).show();
+						return;
+					}
+					view.setEnabled(false);
+					view.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							view.setEnabled(true);
+						}
+					}, 1000);
+					if (null != mDeviceAddress && !device.getAddress().equals(mDeviceAddress)) {
+						// 已连接接设备先断开连接
+						if (mble.isConnect()) {
+							mble.disconnectDevice();
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							mble.disconnectLocalDevice();
+							mConnected = false;
+							Log.d(TAG, "销毁2 DeviceAddress=" + mDeviceAddress);
+						}
+						mDeviceName = device.getName();
+						mDeviceAddress = device.getAddress();
+						// 存储新选择的蓝牙设备信息
+						SharedPreferences.Editor editor = bleInfo.edit();
+						editor.putString("name", device.getName());
+						editor.putString("address", device.getAddress());
+						editor.commit();
+						try {
+							Thread.sleep(300);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						if (mScanning) {
+							Log.d(TAG, "停止扫描2....");
+							scanLeDevice(false); // 停止蓝牙扫描
+						}
+						Log.d(TAG, "******连接蓝牙设备*****");
+						// 连接蓝牙设备
+						new ConnectBluetoothTask(IndexActivity.this, device.getName(), device.getAddress()).execute();
+					} 
+				}
+			});
+			// 重新扫描
+			mRefreshtScan.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					/** 消除弹窗 */
+					if (!mScanning) {
+						Log.d(TAG, "onResume afresh scan 3");
+						// 清除不是当前设备数据
+						if (null != mLeDeviceListAdapter) {
+							String mdeviceName = (mDeviceName == null ? "未知名称" : mDeviceName);
+							LogUtil.d(TAG, "清除不是当前设备数据:" + mdeviceName + "," + mDeviceAddress);
+							mLeDeviceListAdapter.setConnected(mConnected);// 扫描之前先检查之前链接状态
+							mLeDeviceListAdapter.clearOthers(mDeviceAddress, mDeviceName);
+						}
+						try {
+							Thread.sleep(200);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						scanLeDevice(true);
+					}
+				}
+			});
+			// 刷新按钮状态
+			invalidataRefresh();
+			// 未搜索重新开始蓝牙扫描
+			if (!mScanning) {
+				if (mble.isOpened() && mLeDeviceListAdapter.getCount() <= 0) {
+					mLeDeviceListAdapter = new LeDeviceListAdapter(this);
+					slvFoundBleDevices.setAdapter(mLeDeviceListAdapter);
+					// Android6.0 M Permission check 需要申请定位权限
+					if (!PermissionUtils.checkPermission(IndexActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION,
+							PermissionUtils.PERMISSION_REQUEST_CODE_VIDEO_LOCATION)) {
+						LogUtil.d(TAG, "申请定位授权...");
+					} else {
+						scanLeDevice(true);
+					}
+				}
+			}
+			slvFoundBleDevices.setAdapter(mLeDeviceListAdapter);
+			if (dialog != null && !dialog.isShowing()) {
+				dialog.show();
+			}
+
+
+
+
+	/*
+		 * String url = "https://xscenic.qiweiwangguo.com/api/report/equipment/" + eid +
+		 * "/video/" + vid + "/downloaded";
+		 * 
+		 * Map<String, String> map = new HashMap<String, String>(); map.put("eid", eid +
+		 * ""); map.put("vid", vid + ""); String token = StringUtils.getToken(map);
+		 * System.out.println("url:" + url); OkHttpClient client = new OkHttpClient();
+		 * JSONObject json = new JSONObject(); try { json.put("eid", eid);
+		 * json.put("vid", vid); json.put("token", token); } catch (JSONException e1) {
+		 * e1.printStackTrace(); }
+		 * 
+		 * // post方式提交的数据 RequestBody requestBody =
+		 * RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
+		 * String.valueOf(json)); Request request = new
+		 * Request.Builder().url(url).post(requestBody).build();
+		 * 
+		 * client.newCall(request).enqueue(new Callback() {
+		 * 
+		 * @Override public void onFailure(Call call, final IOException e) {
+		 * Log.d("上传视频下载状态", "失败：" + e.getMessage()); showToast("失败：" + e.getMessage());
+		 * }
+		 * 
+		 * @Override public void onResponse(Call call, Response response) throws
+		 * IOException { Log.d("上传视频下载状态", response.body().string()); if
+		 * (response.isSuccessful()) {// 回调的方法执行在子线程。 Log.d("上传视频下载状态", "获取数据成功了"); } }
+		 * });
+		 */
+
+
+
+/**
+	 * 
+	 * @Title: addCacheDownloader @Description: 加入缓存 @param url @throws
+	 */
+	private void addCacheDownloader(final Context mContext, String url, final String filename) {
+		try {
+			FileDownloader.detect(url, new OnDetectBigUrlFileListener() {
+				// ----------------------detect url file callback----------------------
+				@Override
+				public void onDetectNewDownloadFile(final String url, String fileName, final String saveDir,
+						long fileSize) {
+
+					LogUtil.e(TAG, "创建文件：" + fileName + "," + url);
+					showToast(mContext.getResources().getString(R.string.video_list_add_itcache));
+					// 如果有必要，可以改变文件名称fileName和下载保存的目录saveDir
+					// 标题缓存
+					// FileDownloader.createAndStart(url, root, fileName);
+					DownloadConfiguration.Builder builder = new DownloadConfiguration.Builder();
+					builder.addHeader("Referer", "scenic.qiweiwangguo.com");
+					FileDownloader.createAndStart(url, saveDir, filename, builder.build());
+				}
+
+				@Override
+				public void onDetectUrlFileExist(String url) {
+					LogUtil.e(TAG, "探测文件，继续下载：" + url);
+					// 继续下载，自动会断点续传（如果服务器无法支持断点续传将从头开始下载）
+					// FileDownloader.start(url);
+					DownloadConfiguration.Builder builder = new DownloadConfiguration.Builder();
+					builder.addHeader("Referer", "scenic.qiweiwangguo.com");
+					FileDownloader.start(url, builder.build());
+				}
+
+				// 探测一个网络文件失败了，具体查看failReason
+				@Override
+				public void onDetectUrlFileFailed(String url, DetectBigUrlFileFailReason failReason) {
+					String msg = null;
+					if (failReason != null) {
+						msg = failReason.getMessage();
+						if (TextUtils.isEmpty(msg)) {
+							Throwable t = failReason.getCause();
+							if (t != null) {
+								msg = t.getLocalizedMessage();
+							}
+						}
+						if (failReason.getType() == DetectBigUrlFileFailReason.TYPE_URL_ILLEGAL) {
+							showToast(
+									mContext.getResources().getString(R.string.download_main_url_illegal) + "\n" + url);
+							Log.e("wlf", "探测文件出错(Url不合法)：" + msg + "," + url);
+							return;
+						}
+					}
+					showToast("加入缓存失败:" + msg + "," + url);
+					LogUtil.e(TAG, "出错回调，探测文件出错：" + msg + ",\n" + url);
+				}
+			});
+		} catch (Exception e) {
+			LogUtil.e(TAG, "加入缓存异常.", e);
+		}
+	}
+
+	private Toast mToast;
+
+	private void showToast(CharSequence text) {
+		if (mToast == null) {
+			mToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
+		} else {
+			mToast.cancel();
+			mToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
+		}
+		mToast.show();
+	}
+
+
+/**
+	 * 注册文件监听同步你自己的数据存储状态
+	 */
+	private boolean isInitDownload = false;
+	private OnDownloadFileChangeListener mOnDownloadFileChangeListener = new OnDownloadFileChangeListener() {
+		@Override
+		public void onDownloadFileCreated(DownloadFileInfo downloadFileInfo) {
+			// 创建新的下载文件，可能需要同步您自己的数据存储状态，例如在您自己的数据库中添加记录
+			LogUtil.d(TAG, "onDownloadFileCreated().创建新的下载文件.." + downloadFileInfo.getFileName());
+			isInitDownload = true;
+		}
+
+		@Override
+		public void onDownloadFileUpdated(DownloadFileInfo downloadFileInfo, Type type) {
+			// 下载文件更新，可能需要同步自己的数据存储状态，比如更新自己的数据库中的记录
+			LogUtil.d(TAG, "onDownloadFileUpdated().下载文件更新.," + downloadFileInfo.getFileName());
+			if (downloadFileInfo.getStatus() == Status.DOWNLOAD_STATUS_DOWNLOADING) {
+				// 正在下载
+				if (downloadFileInfo.getDownloadedSizeLong() > 0)
+					getNotification(downloadFileInfo, getActivity().getString(R.string.download_main_downloading)
+							+ " | " + downloadFileInfo.getFileName());
+			} else if (downloadFileInfo.getStatus() == Status.DOWNLOAD_STATUS_COMPLETED) {
+				// 更新完成
+				// 取消之前更新
+				getNotificationManager(IndexActivity.this).cancel(downloadFileInfo.getId());
+
+				String nstr = getActivity().getString(R.string.download_main_download_completed) + "| "
+						+ downloadFileInfo.getFileName();
+				Notification notification = getNotification(FileDownloadMainActivity.class, nstr, ((int) 100));
+				getNotificationManager(IndexActivity.this).notify(100, notification);
+
+				if (FileVideoUtil.isVideo(new File(downloadFileInfo.getFileName()))) {
+					addVideoDownLoad(downloadFileInfo);
+					LogUtil.v(TAG, "home下载视频加入列表:" + downloadFileInfo.getFileName());
+				}
+			} else if (downloadFileInfo.getStatus() == Status.DOWNLOAD_STATUS_PAUSED) {
+				// 已暂停
+				getNotification(downloadFileInfo, getActivity().getString(R.string.download_main_paused) + " | "
+						+ downloadFileInfo.getFileName());
+			} else if (downloadFileInfo.getStatus() == Status.DOWNLOAD_STATUS_PREPARING) {
+				// 正在获取资源
+				getNotification(downloadFileInfo, getActivity().getString(R.string.download_main_getting_resource)
+						+ " | " + downloadFileInfo.getFileName());
+			} else if (downloadFileInfo.getStatus() == Status.DOWNLOAD_STATUS_ERROR) {
+				// 下载出错
+				getNotification(downloadFileInfo, getActivity().getString(R.string.download_main_download_error) + " | "
+						+ downloadFileInfo.getFileName());
+			}
+		}
+
+		@Override
+		public void onDownloadFileDeleted(DownloadFileInfo downloadFileInfo) {
+			// 下载文件被删除，可能需要同步你自己的数据存储状态，比如在你自己的数据库中删除记录
+			LogUtil.d(TAG, "onDownloadFileDeleted().下载文件被删除.." + downloadFileInfo.getId() + ","
+					+ downloadFileInfo.getFileName());
+		}
+	};
+
+// 通知栏显示
+	protected void getNotification(DownloadFileInfo downloadFileInfo, String nstr) {
+		// file size
+		double downloadSize = downloadFileInfo.getDownloadedSizeLong() / 1024f / 1024;
+		double fileSize = downloadFileInfo.getFileSizeLong() / 1024f / 1024;
+		double percent = downloadSize / fileSize * 100;
+		Notification notification = getNotification(FileDownloadMainActivity.class, nstr, ((int) percent));
+		getNotificationManager(IndexActivity.this).notify(downloadFileInfo.getId(), notification);
+	}
+
+
+
+获取视频信息成功: {"msg":"\u83b7\u53d6\u6210\u529f",
+"data":{"equipment":{"aid":19,"eid":29,"no":"10028","mac":"04:d6:aa:29:25:d5","name":"\u624b\u673a\u6d4b\u8bd5\u7528","status":1,
+"video":[{"vid":95,"name":"\u516c\u5b59\u529e\u9738","price":"0.01","length":"85",
+"introduction":"\u6d4b\u8bd5\u89c6\u9891\u6d4b\u8bd5\u89c6\u9891\u6d4b\u8bd5\u89c6\u9891\u6d4b\u8bd5\u89c6\u9891\u6d4b\u8bd5\u89c6\u9891\u6d4b\u8bd5\u89c6\u9891",
+"uri":"https:\/\/scenic-qiweiwangguo-com.oss-cn-hangzhou.aliyuncs.com\/uploads\/videos\/cccc.mp4","script_uri":"https:\/\/scenic-qiweiwangguo-com.oss-cn-hangzhou.aliyuncs.com\/uploads\/web\/script\/cccc.srt","pic_uri":"https:\/\/scenic-qiweiwangguo-com.oss-cn-hangzhou.aliyuncs.com\/uploads\/web\/image\/1529941217711-\u5b8b\u4f0a\u4eba.jpg","created_at":"2018-06-26 16:48:40","on_status":1},{"vid":117,"name":"\u4f60","price":"0.01","length":"1","introduction":"KJM","uri":"http:\/\/scentreal-media-player.oss-cn-shanghai.aliyuncs.com\/f2.mp4","script_uri":"http:\/\/xscenic-qiweiwangguo-com.oss-cn-hangzhou.aliyuncs.com\/uploads\/web\/script\/1530514226618-%E6%92%AD%E6%94%BE%E6%B5%8B%E8%AF%95.srt","pic_uri":"http:\/\/xscenic-qiweiwangguo-com.oss-cn-hangzhou.aliyuncs.com\/uploads\/web\/image\/1530514233101-timg.jpg","created_at":"2018-07-17 11:51:27","on_status":1}]}},"code":200}
+
+var merge = require('webpack-merge')
+var prodEnv = require('./prod.env')
+
+module.exports = merge(prodEnv, {
+  NODE_ENV: '"development"',
+  BASE_API: '"http://xcabinet.qiweiwangguo.com"',
+})
+
+
+<div slot="extra" style="transform: translate(0,-5px)">
+        <Button type="primary" @click="feeSetting">金额设置</Button>
+      </div>
+
+ <FormItem label="二维码">
+              <Button type="primary" size="small">生成二维码</Button>
+              <div style="margin-top: 20px;">
+                <div style="float:left">
+                  <div>
+                    <img :src="GameFeeForm.qrCode" :alt="`${GameFeeForm.name} 二维码`" style="width: 200px;height: 200px">
+                  </div>
+                  <div style="text-align:center">付费二维码</div>
+                </div>
+                <div style="float:left;margin-left: 50px">
+                  <div>
+                    <img :src="GameFeeForm.qrCode_refill" :alt="`${GameFeeForm.name_refill} 二维码`" style="width: 200px;height: 200px">
+                  </div>
+                  <div style="text-align:center">续费二维码</div>
+                </div>
+              </div>
+            </FormItem>
+
+
+/**
+     *
+     * @param bean
+     *            视频播放对象
+     * @param isNetFlg
+     *            检查网络拦截 false 不需要拦截
+     */
+    private void goToVideoPlayerPage(VideoBean bean, boolean isNetFlg, int uid, int movie, String order) {
+        LogUtil.d(TAG, "已点击 调整界面:" + bean.getVideoName());
+        // 先检查读写权限
+        if (!PermissionUtils.checkPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                PermissionUtils.PERMISSION_REQUEST_CODE_WRITE)) {
+            LogUtil.d(TAG, "申请读写授权...");
+            return;
+        }
+        // 视频类型
+        int currentType = 0;
+        // 视频类型 if(MediaUtils.isNative(bean.getVideoLink())){return;}
+        if (currentType == 0) {
+            if (!FileVideoUtil.checkNoExists(bean.getVideoLink())) {
+                String strvideo = String.format(getResources().getString(R.string.Video_error_not_file),
+                        bean.getVideoName());
+                ToastUtils.showShort(this, strvideo);
+                return;
+            }
+            // 本地视频
+            // Intent appIntent = new Intent(this, VideoPlayerActivity.class);//测试
+            Intent appIntent = new Intent(this, VideoPlayerActivity.class);
+            appIntent.putExtra(VideoPlayerActivity.VIDEO_TITLE, bean.getVideoName());
+            appIntent.putExtra(VideoPlayerActivity.VIDEO_PATH, bean.getVideoLink());
+            appIntent.putExtra(VideoPlayerActivity.VIDEO_SUBPATH, bean.getVideoSrtLink());
+            appIntent.putExtra(VideoPlayerActivity.DEVICE_NAME, mDeviceName);
+            appIntent.putExtra(VideoPlayerActivity.DEVICE_ADDRESS, mDeviceAddress);
+            appIntent.putExtra("uid", uid);
+            appIntent.putExtra("movie", movie);
+            appIntent.putExtra("order", order);
+            // appIntent.putExtra(VideoPlayerActivity.VIDEO_LOCKSCREEN,false);
+            appIntent.putExtra("Jump", TAG);
+            startActivityForResult(appIntent, 1);
+        } else {
+            // 在线视频
+            // 网络不可用拦截
+            if (isNetFlg && !NetUtil.isNetworkConn(this)) {
+                ToastUtils.showShort(MainActivity.this, getString(R.string.network_not_connected));
+                return;
+            }
+            try {
+                Intent appIntent = new Intent(this, VideoPlayerActivity.class);
+                appIntent.putExtra(VideoPlayerActivity.VIDEO_TITLE, bean.getVideoName());
+                appIntent.putExtra(VideoPlayerActivity.VIDEO_PATH, bean.getVideoLink());
+                appIntent.putExtra(VideoPlayerActivity.VIDEO_SUBPATH, bean.getVideoSrtLink());
+                // appIntent.putExtra(VideoPlayerActivity.VIDEO_LOCKSCREEN, true);
+                appIntent.putExtra("Jump", TAG);
+                startActivity(appIntent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+// 注册监听蓝牙开关状态
+        registerReceiver(mReceiver, makeFilter());
+private IntentFilter makeFilter() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        return filter;
+    }
+
+    // 监听蓝牙开关状态
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            LogUtil.e(TAG, "onReceive---------");
+            if (intent == null) {
+                return;
+            }
+            switch (intent.getAction()) {
+                case BluetoothAdapter.ACTION_STATE_CHANGED:
+                    int blueState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
+                    switch (blueState) {
+                        case BluetoothAdapter.STATE_TURNING_ON:
+                            LogUtil.e("onReceive---------STATE_TURNING_ON");
+                            break;
+                        case BluetoothAdapter.STATE_ON:
+                            LogUtil.e("onReceive---------STATE_ON");
+                            break;
+                        case BluetoothAdapter.STATE_TURNING_OFF:
+                            LogUtil.e("onReceive---------STATE_TURNING_OFF");
+                            break;
+                        case BluetoothAdapter.STATE_OFF:
+                            LogUtil.e("onReceive---------STATE_OFF");
+                            break;
+                    }
+                    break;
+            }
+        }
+    };
+
+List<DownloadGroupEntity> group = Aria.download(this).getGroupTaskList();
+        for (int i = 0; i < group.size(); i++) {
+            for (int j = 0; j < group.get(i).getSubEntities().size(); j++) {
+                Log.d("下载列表", group.get(i).getSubEntities().get(j).getUrl());
+                boolean b = Aria.download(this).taskExists(group.get(i).getSubEntities().get(j).getUrl());
+                Log.d("状态", b + "");
+            }
+        }
+
+for (int i = 0; i < videoList.size(); i++) {
+            if (subEntity.getUrl().equals(videoList.get(i).getSrtUrl())) {
+                videoList.get(i).setSrtStatus(true);
+                videoList.get(i).setSrt_progress(100);
+                if (videoList.get(i).isVideoStatus()) {
+                    videoList.get(i).setStatus(1);
+                    uploadDownloadStatus(videoList.get(i).getId());
+                }
+                break;
+            } else if (subEntity.getUrl().equals(videoList.get(i).getVideoUrl())) {
+                videoList.get(i).setVideo_progress(100);
+                videoList.get(i).setVideoStatus(true);
+                if (videoList.get(i).isSrtStatus()) {
+                    videoList.get(i).setStatus(1);
+                    uploadDownloadStatus(videoList.get(i).getId());
+                }
+                break;
+            }
+        }
+
+
+if (cmd.equals("start")) {
+                        if (resultObject.getJSONObject("data").has("order_no")) {
+                            order_no = resultObject.getJSONObject("data").getString("order_no");
+                        }
+                        // 播放指令
+                        if (isPlaying) {
+                            // 在播放中
+                            String inPlay = "{\"cmd\":\"start\",\"uid\":" + uid + ",\"error\":{\"code\":" + movie + ",\"message\":\"正在播放中\"}}";
+                            sendMessage(inPlay);
+                        } else {
+                            // 不在播放中
+                            onMessageReceivedListener.onMessageReceived(cmd, uid, movie, sound, order_no);
+                        }
+                    } else if (cmd.equals("status")) {
+                        // 查询状态指令
+                        String result;
+                        boolean status_usb = false;
+                        boolean status_ble = false;
+                        USB usb = USB.getInstance();
+                        HolloBluetooth mBLE = HolloBluetooth.getInstance(getApplicationContext());
+                        if (null != usb) {
+                            if (USB.getInstance().isConnected()) {
+                                status_usb = true;
+                            }
+                        }
+                        if (null != mBLE) {
+                            if (mBLE.isConnect()) {
+                                status_ble = true;
+                            }
+                        }
+                        if (status_usb || status_ble) {
+                            if (isPlaying) {
+                                // 播放视频中
+                                result = "BUSY";
+                            } else {
+                                // 设备空闲中
+                                result = "FREE";
+                            }
+                        } else {
+                            // 没有连接设备
+                            result = "ERROR";
+                        }
+                        // 查询状态指令
+                        String status = "{\"cmd\":\"status\",\"uid\":" + uid + ",\"data\":{\"status\":\""
+                                + result + "\"}}";
+                        System.out.println("返回状态：" + status);
+                        sendMessage(status);
+                    } else if (cmd.equals("sound")) {
+                        // 播放声音指令
+                        if (isPlaying) {
+                            // 视频如果在播放中则不接受播放声音指令
+                            return;
+                        }
+                        JSONObject data = resultObject.getJSONObject("data");
+                        sound = data.getString("sound");
+                        onMessageReceivedListener.onMessageReceived(cmd, uid, 0, sound, "");
+                    }
